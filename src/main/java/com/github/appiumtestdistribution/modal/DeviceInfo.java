@@ -1,7 +1,9 @@
 package com.github.appiumtestdistribution.modal;
 
+import lombok.Builder;
 import lombok.Data;
 
+@Builder
 @Data
 public class DeviceInfo {
     private String  apiLevel;

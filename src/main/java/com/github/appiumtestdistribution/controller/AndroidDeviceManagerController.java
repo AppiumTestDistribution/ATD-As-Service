@@ -51,18 +51,18 @@ public class AndroidDeviceManagerController {
     public DeviceInfo getDeviceInfo(@PathVariable final String udid) {
         try {
             final JSONObject info = this.manager.getDeviceInfo(udid);
-            final DeviceInfo deviceInfo = new DeviceInfo();
-            deviceInfo.setApiLevel(info.getString("apiLevel"));
-            deviceInfo.setScreenSize(info.getString("screenSize"));
-            deviceInfo.setOsVersion(info.getString("osVersion"));
-            deviceInfo.setOs(info.getString("os"));
-            deviceInfo.setName(info.getString("name"));
-            deviceInfo.setDevice(info.getBoolean("isDevice"));
-            deviceInfo.setDeviceModel(info.getString("deviceModel"));
-            deviceInfo.setUdid(info.getString("udid"));
-            deviceInfo.setDeviceManufacturer(info.getString("deviceManufacturer"));
-            deviceInfo.setBrand(info.getString("brand"));
-            return deviceInfo;
+            return DeviceInfo.builder()
+                .apiLevel(info.getString("apiLevel"))
+                .screenSize(info.getString("screenSize"))
+                .osVersion(info.getString("osVersion"))
+                .os(info.getString("os"))
+                .name(info.getString("name"))
+                .isDevice(info.getBoolean("isDevice"))
+                .deviceModel(info.getString("deviceModel"))
+                .udid(info.getString("udid"))
+                .deviceManufacturer(info.getString("deviceManufacturer"))
+                .brand(info.getString("brand"))
+                .build();
         } catch (final ArrayIndexOutOfBoundsException e) {
             throw new NoDeviceFoundException(udid);
         }
