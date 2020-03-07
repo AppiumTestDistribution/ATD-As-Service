@@ -69,7 +69,7 @@
         <dependency>
             <groupId>com.github.AppiumTestDistribution</groupId>
             <artifactId>DeviceManager</artifactId>
-            <version>2863590efe</version>
+            <version>3.0</version>
         </dependency>
     </dependencies>
 

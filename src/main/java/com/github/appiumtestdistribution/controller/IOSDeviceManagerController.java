@@ -6,7 +6,7 @@ import com.github.appiumtestdistribution.error.NoDeviceFoundException;
 import com.github.appiumtestdistribution.modal.DeviceInfo;
 import com.github.appiumtestdistribution.modal.Devices;
 import com.github.device.Device;
-import com.github.iOS.IOSManager;
+import com.github.ios.IOSManager;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
