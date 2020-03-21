@@ -1,12 +1,13 @@
 package com.github.appiumtestdistribution.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.appiumtestdistribution.error.NoDeviceFoundException;
+import com.github.appiumtestdistribution.modal.Device;
 import com.github.appiumtestdistribution.modal.DeviceInfo;
 import com.github.appiumtestdistribution.modal.Devices;
-import com.github.device.Device;
-import com.github.ios.IOSManager;
+import com.github.iOS.IOSManager;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +28,7 @@ public class IOSDeviceManagerController {
     @GetMapping("/devices/ios/{udid}/info")
     public DeviceInfo getDeviceInfo(@PathVariable final String udid) {
         try {
-            final Device info = this.manager.getDevice(udid);
+            final Device info = new Device(this.manager.getDevice(udid));
             return DeviceInfo.builder()
                 .apiLevel(info.getApiLevel())
                 .screenSize(info.getScreenSize())
@@ -50,7 +51,7 @@ public class IOSDeviceManagerController {
     @GetMapping("/devices/ios/{udid}")
     public Device getIosDevice(@PathVariable final String udid) {
         try {
-            return this.manager.getDevice(udid);
+            return new Device(this.manager.getDevice(udid));
         } catch (final RuntimeException e) {
             throw new NoDeviceFoundException(udid);
         }
@@ -60,7 +61,10 @@ public class IOSDeviceManagerController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/devices/ios")
     public Devices getIosDevices() {
-        final List<Device> devices = this.manager.getDevices();
+        final List<Device> devices = this.manager.getDevices()
+            .stream()
+            .map(Device::new)
+            .collect(Collectors.toList());
         if (devices.size() == 0) {
             throw new NoDeviceFoundException();
         }

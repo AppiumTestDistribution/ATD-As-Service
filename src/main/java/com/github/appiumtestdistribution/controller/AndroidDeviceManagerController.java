@@ -1,12 +1,13 @@
 package com.github.appiumtestdistribution.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.android.AndroidManager;
 import com.github.appiumtestdistribution.error.NoDeviceFoundException;
+import com.github.appiumtestdistribution.modal.Device;
 import com.github.appiumtestdistribution.modal.DeviceInfo;
 import com.github.appiumtestdistribution.modal.Devices;
-import com.github.device.Device;
 import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class AndroidDeviceManagerController {
     @GetMapping("/devices/android/{udid}")
     public Device getAndroidDevice(@PathVariable final String udid) {
         try {
-            return this.manager.getDevice(udid);
+            return new Device(this.manager.getDevice(udid));
         } catch (final RuntimeException e) {
             throw new NoDeviceFoundException(udid);
         }
@@ -38,7 +39,10 @@ public class AndroidDeviceManagerController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/devices/android")
     public Devices getAndroidDevices() {
-        final List<Device> devices = this.manager.getDevices();
+        final List<Device> devices = this.manager.getDevices()
+            .stream()
+            .map(Device::new)
+            .collect(Collectors.toList());
         if (devices.size() == 0) {
             throw new NoDeviceFoundException();
         }
