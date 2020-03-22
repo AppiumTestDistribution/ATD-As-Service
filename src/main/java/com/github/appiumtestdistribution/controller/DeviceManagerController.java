@@ -31,7 +31,7 @@ public class DeviceManagerController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping("devices/freeDevice")
+    @DeleteMapping("/devices/freeDevice")
     public Device freeDevice() {
         return toggleDevice(false);
     }

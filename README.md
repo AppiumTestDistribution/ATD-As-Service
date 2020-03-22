@@ -16,6 +16,14 @@ Will return all the devices connected to the system.
 
 Will return the device for the corresponding UDID connected on the system.
 
+### POST `/devices/allocate`
+
+Allocates first available device by setting `isAvailable` flag to `false`.
+
+### DELETE `/devices/freeDevice`
+
+Frees first allocated device by setting `isAvailable` flag to `true`.
+
 ### GET `/devices/android`
 
 Will return all Android devices connected to the system.
