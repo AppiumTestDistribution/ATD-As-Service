@@ -1,9 +1,16 @@
 package com.github.appiumtestdistribution.modal;
 
-import lombok.Data;
-import org.springframework.data.mongodb.core.mapping.Document;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
-@Document(collection = "device")
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@NoArgsConstructor
+@ToString
+@Entity
 @Data
 public class Device {
     private String  apiLevel;
@@ -11,6 +18,9 @@ public class Device {
     private String  deviceManufacturer;
     private String  deviceModel;
     private String  deviceType;
+    @Id
+    @GeneratedValue
+    private long    id;
     private boolean isAvailable;
     private boolean isCloud;
     private boolean isDevice;
