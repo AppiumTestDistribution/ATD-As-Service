@@ -25,17 +25,18 @@ public class DeviceManagerController {
     private DeviceRepository repository;
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/devices/allocate")
-    public Device allocateDevice() {
-        return toggleDevice(true);
+    @PostMapping("/devices/{uuid}/allocate")
+    public Device allocateDevice(@PathVariable final String uuid) {
+        return toggleDevice(uuid, true);
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping("/devices/freeDevice")
-    public Device freeDevice() {
-        return toggleDevice(false);
+    @DeleteMapping("/devices/{uuid}/freeDevice")
+    public Device freeDevice(@PathVariable final String uuid) {
+        return toggleDevice(uuid, false);
     }
 
+    @Deprecated
     @SneakyThrows
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/devices/{udid}")
@@ -62,11 +63,12 @@ public class DeviceManagerController {
         return new Devices(devices);
     }
 
-    private Device toggleDevice(final boolean allocate) {
-        final Optional<Device> device = this.repository.findAll()
-            .parallelStream()
-            .filter(d -> allocate == d.isAvailable())
-            .findFirst();
+    private Device toggleDevice(final String uuid, final boolean allocate) {
+        if (this.repository.findAll()
+            .size() == 0) {
+            getDevices();
+        }
+        final Optional<Device> device = Optional.ofNullable(this.repository.findDeviceByUdid(uuid));
         device.ifPresent(value -> value.setAvailable(!allocate));
         device.orElseThrow(NoDeviceFoundException::new);
         this.repository.save(device.get());
