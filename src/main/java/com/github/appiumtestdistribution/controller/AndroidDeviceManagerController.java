@@ -11,17 +11,16 @@ import com.github.appiumtestdistribution.modal.Devices;
 import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AndroidDeviceManagerController {
     private final AndroidManager manager;
+    private final AndroidDeviceManagerController androidManager;
 
     public AndroidDeviceManagerController() {
         this.manager = new AndroidManager();
+        this.androidManager = new AndroidDeviceManagerController();
     }
 
     @SneakyThrows
@@ -71,4 +70,20 @@ public class AndroidDeviceManagerController {
             throw new NoDeviceFoundException(udid);
         }
     }
+
+
+    @SneakyThrows
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/devices/adblog/start")
+    public String startADBLog(@RequestParam String uuid, @RequestParam String filePath){
+        return androidManager.startADBLog(uuid, filePath);
+    }
+
+    @SneakyThrows
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/devices/adblog/stop")
+    public String stopADBLog(@RequestParam String uuid){
+        return androidManager.stopADBLog(uuid);
+    }
+
 }
