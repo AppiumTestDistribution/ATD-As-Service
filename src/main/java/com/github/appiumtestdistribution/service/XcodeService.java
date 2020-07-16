@@ -3,7 +3,9 @@ package com.github.appiumtestdistribution.service;
 import com.github.appiumtestdistribution.helpers.Helpers;
 import com.github.appiumtestdistribution.modal.XcodeResponse;
 import lombok.SneakyThrows;
+import org.springframework.stereotype.Service;
 
+@Service
 public class XcodeService {
 
     @SneakyThrows
