@@ -16,11 +16,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class AndroidDeviceManagerController {
     private final AndroidManager manager;
-    private final AndroidDeviceManagerController androidManager;
 
     public AndroidDeviceManagerController() {
         this.manager = new AndroidManager();
-        this.androidManager = new AndroidDeviceManagerController();
     }
 
     @SneakyThrows
@@ -76,14 +74,14 @@ public class AndroidDeviceManagerController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/devices/adblog/start")
     public String startADBLog(@RequestParam String uuid, @RequestParam String filePath){
-        return androidManager.startADBLog(uuid, filePath);
+        return manager.startADBLog(uuid, filePath);
     }
 
     @SneakyThrows
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/devices/adblog/stop")
     public String stopADBLog(@RequestParam String uuid){
-        return androidManager.stopADBLog(uuid);
+        return manager.stopADBLog(uuid);
     }
 
 }
