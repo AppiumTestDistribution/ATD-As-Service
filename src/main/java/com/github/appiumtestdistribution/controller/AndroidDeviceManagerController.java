@@ -71,4 +71,19 @@ public class AndroidDeviceManagerController {
             throw new NoDeviceFoundException(udid);
         }
     }
+
+    @SneakyThrows
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/devices/adblog/start")
+    public String startADBLog(@RequestParam String uuid, @RequestParam String filePath){
+        return manager.startADBLog(uuid, filePath);
+    }
+
+    @SneakyThrows
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/devices/adblog/stop")
+    public String stopADBLog(@RequestParam String uuid){
+        return manager.stopADBLog(uuid);
+    }
+
 }
