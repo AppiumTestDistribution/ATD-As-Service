@@ -22,8 +22,7 @@ import static java.util.Collections.singletonList;
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class AndroidDeviceManagerControllerTest {
     AndroidManager androidManager = mock(AndroidManager.class);
@@ -232,6 +231,72 @@ class AndroidDeviceManagerControllerTest {
                 assertEquals(exception.getMessage(), "No device with ID [test-udid] found on this machine.");
             }
         }
+
+        @Nested
+        class startADBLog {
+            @SneakyThrows
+            @Test
+            void call_startADBLog() {
+                AndroidDeviceManagerController target = new AndroidDeviceManagerController(androidManager);
+
+                target.startADBLog("test-udid", "test-file-path");
+
+                verify(androidManager, times(1)).startADBLog("test-udid", "test-file-path");
+            }
+
+            @SneakyThrows
+            @Test
+            void return_start_message() {
+                doReturn("test start message").when(androidManager).startADBLog(eq("test-udid"), eq("test-file-path"));
+                AndroidDeviceManagerController target = new AndroidDeviceManagerController(androidManager);
+
+                String actual = target.startADBLog("test-udid", "test-file-path");
+
+                assertEquals("test start message", actual);
+            }
+
+            @SneakyThrows
+            @Test
+            void throw_exception_if_exception_occurred() {
+                doThrow(new Exception()).when(androidManager).startADBLog(eq("test-udid"), eq("test-file-path"));
+                AndroidDeviceManagerController target = new AndroidDeviceManagerController(androidManager);
+
+                assertThrows(Exception.class, () -> target.startADBLog("test-udid", "test-file-path"));
+            }
+        }
+
+        @Nested
+        class stopADBLog {
+            @SneakyThrows
+            @Test
+            void call_stopADBLog() {
+                AndroidDeviceManagerController target = new AndroidDeviceManagerController(androidManager);
+
+                target.stopADBLog("test-udid");
+
+                verify(androidManager, times(1)).stopADBLog("test-udid");
+            }
+
+            @SneakyThrows
+            @Test
+            void return_stop_message() {
+                doReturn("test stop message").when(androidManager).stopADBLog(eq("test-udid"));
+                AndroidDeviceManagerController target = new AndroidDeviceManagerController(androidManager);
+
+                String actual = target.stopADBLog("test-udid");
+
+                assertEquals("test stop message", actual);
+            }
+
+            @SneakyThrows
+            @Test
+            void throw_exception_if_exception_occurred() {
+                doThrow(new Exception()).when(androidManager).stopADBLog(eq("test-udid"));
+                AndroidDeviceManagerController target = new AndroidDeviceManagerController(androidManager);
+
+                assertThrows(Exception.class, () -> target.stopADBLog("test-udid"));
+            }
+        }
     }
 
     @Nested
@@ -373,6 +438,46 @@ class AndroidDeviceManagerControllerTest {
                         .andExpect(jsonPath("$.osVersion").value("TEST-os-version"))
                         .andExpect(jsonPath("$.screenSize").value("TEST-screen-size"))
                         .andExpect(jsonPath("$.udid").value("TEST-udid"))
+                ;
+            }
+        }
+
+        @Nested
+        class startADBLog {
+            @SneakyThrows
+            @Test
+            void return_start_message() {
+                doReturn("test start message").when(androidManager).startADBLog(eq("test-udid"), eq("test-file-path"));
+                AndroidDeviceManagerController target = new AndroidDeviceManagerController(androidManager);
+
+                MockMvc mockMvc = MockMvcBuilders
+                        .standaloneSetup(target)
+                        .build();
+
+                mockMvc
+                        .perform(MockMvcRequestBuilders.get("/devices/adblog/start?uuid=test-udid&filePath=test-file-path"))
+                        .andExpect(status().isOk())
+                        .andExpect(content().string("test start message"))
+                ;
+            }
+        }
+
+        @Nested
+        class stopADBLog {
+            @SneakyThrows
+            @Test
+            void return_stop_message() {
+                doReturn("test stop message").when(androidManager).stopADBLog(eq("test-udid"));
+                AndroidDeviceManagerController target = new AndroidDeviceManagerController(androidManager);
+
+                MockMvc mockMvc = MockMvcBuilders
+                        .standaloneSetup(target)
+                        .build();
+
+                mockMvc
+                        .perform(MockMvcRequestBuilders.get("/devices/adblog/stop?uuid=test-udid"))
+                        .andExpect(status().isOk())
+                        .andExpect(content().string("test stop message"))
                 ;
             }
         }
