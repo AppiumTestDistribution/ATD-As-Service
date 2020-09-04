@@ -3,7 +3,9 @@ package com.github.appiumtestdistribution.controller;
 import com.github.android.AndroidManager;
 import com.github.appiumtestdistribution.error.NoDeviceFoundException;
 import com.github.appiumtestdistribution.modal.Device;
+import com.github.appiumtestdistribution.modal.DeviceInfo;
 import lombok.SneakyThrows;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,9 +15,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -161,6 +165,73 @@ class AndroidDeviceManagerControllerTest {
                 assertEquals(exception.getMessage(), "No devices found on this machine.");
             }
         }
+
+        @Nested
+        class getDeviceInfo {
+            @SneakyThrows
+            @Test
+            void get_device_info_from_manager() {
+                doReturn(new JSONObject(Map.ofEntries(
+                        entry("apiLevel", "TEST-api-level"),
+                        entry("screenSize", "TEST-screen-size"),
+                        entry("osVersion", "TEST-os-version"),
+                        entry("os", "TEST-os"),
+                        entry("name", "TEST-name"),
+                        entry("isDevice", true),
+                        entry("deviceModel", "TEST-device-model"),
+                        entry("udid", "TEST-udid"),
+                        entry("deviceManufacturer", "TEST-device-manufacturer"),
+                        entry("brand", "TEST-brand")
+                ))).when(androidManager).getDeviceInfo(eq("test-udid"));
+                AndroidDeviceManagerController target = new AndroidDeviceManagerController(androidManager);
+
+                target.getDeviceInfo("test-udid");
+
+                verify(androidManager, times(1)).getDeviceInfo("test-udid");
+            }
+
+            @SneakyThrows
+            @Test
+            void return_device_info() {
+                doReturn(new JSONObject(Map.ofEntries(
+                        entry("apiLevel", "TEST-api-level"),
+                        entry("screenSize", "TEST-screen-size"),
+                        entry("osVersion", "TEST-os-version"),
+                        entry("os", "TEST-os"),
+                        entry("name", "TEST-name"),
+                        entry("isDevice", true),
+                        entry("deviceModel", "TEST-device-model"),
+                        entry("udid", "TEST-udid"),
+                        entry("deviceManufacturer", "TEST-device-manufacturer"),
+                        entry("brand", "TEST-brand")
+                ))).when(androidManager).getDeviceInfo(eq("test-udid"));
+                AndroidDeviceManagerController target = new AndroidDeviceManagerController(androidManager);
+
+                DeviceInfo actual = target.getDeviceInfo("test-udid");
+
+                assertEquals("TEST-api-level", actual.getApiLevel());
+                assertEquals("TEST-api-level", actual.getApiLevel());
+                assertEquals("TEST-brand", actual.getBrand());
+                assertTrue(actual.isDevice());
+                assertEquals("TEST-device-manufacturer", actual.getDeviceManufacturer());
+                assertEquals("TEST-device-model", actual.getDeviceModel());
+                assertEquals("TEST-name", actual.getName());
+                assertEquals("TEST-os", actual.getOs());
+                assertEquals("TEST-os-version", actual.getOsVersion());
+                assertEquals("TEST-screen-size", actual.getScreenSize());
+                assertEquals("TEST-udid", actual.getUdid());
+            }
+
+            @SneakyThrows
+            @Test
+            void throw_exception_if_array_index_out_of_bounds_exception_occurred() {
+                doThrow(new ArrayIndexOutOfBoundsException()).when(androidManager).getDeviceInfo("test-udid");
+                AndroidDeviceManagerController target = new AndroidDeviceManagerController(androidManager);
+
+                NoDeviceFoundException exception = assertThrows(NoDeviceFoundException.class, () -> target.getDeviceInfo("test-udid"));
+                assertEquals(exception.getMessage(), "No device with ID [test-udid] found on this machine.");
+            }
+        }
     }
 
     @Nested
@@ -262,6 +333,46 @@ class AndroidDeviceManagerControllerTest {
                         .andExpect(jsonPath("$.devices.[0].state").value("TEST-state"))
                         .andExpect(jsonPath("$.devices.[0].udid").value("TEST-udid"))
                         .andExpect(jsonPath("$.devices.[0].id").isNumber())
+                ;
+            }
+        }
+
+        @Nested
+        class getDeviceInfo {
+            @SneakyThrows
+            @Test
+            void return_device_info_json_if_found() {
+                doReturn(new JSONObject(Map.ofEntries(
+                        entry("apiLevel", "TEST-api-level"),
+                        entry("screenSize", "TEST-screen-size"),
+                        entry("osVersion", "TEST-os-version"),
+                        entry("os", "TEST-os"),
+                        entry("name", "TEST-name"),
+                        entry("isDevice", true),
+                        entry("deviceModel", "TEST-device-model"),
+                        entry("udid", "TEST-udid"),
+                        entry("deviceManufacturer", "TEST-device-manufacturer"),
+                        entry("brand", "TEST-brand")
+                ))).when(androidManager).getDeviceInfo("test-udid");
+                AndroidDeviceManagerController target = new AndroidDeviceManagerController(androidManager);
+
+                MockMvc mockMvc = MockMvcBuilders
+                        .standaloneSetup(target)
+                        .build();
+
+                mockMvc
+                        .perform(MockMvcRequestBuilders.get("/devices/android/test-udid/info"))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.apiLevel").value("TEST-api-level"))
+                        .andExpect(jsonPath("$.brand").value("TEST-brand"))
+                        .andExpect(jsonPath("$.device").value(true))
+                        .andExpect(jsonPath("$.deviceManufacturer").value("TEST-device-manufacturer"))
+                        .andExpect(jsonPath("$.deviceModel").value("TEST-device-model"))
+                        .andExpect(jsonPath("$.name").value("TEST-name"))
+                        .andExpect(jsonPath("$.os").value("TEST-os"))
+                        .andExpect(jsonPath("$.osVersion").value("TEST-os-version"))
+                        .andExpect(jsonPath("$.screenSize").value("TEST-screen-size"))
+                        .andExpect(jsonPath("$.udid").value("TEST-udid"))
                 ;
             }
         }
