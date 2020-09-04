@@ -4,8 +4,10 @@ import com.github.android.AndroidManager;
 import com.github.appiumtestdistribution.error.NoDeviceFoundException;
 import com.github.appiumtestdistribution.modal.Device;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -16,6 +18,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class AndroidDeviceManagerControllerTest {
+    AndroidManager androidManager = mock(AndroidManager.class);
+
+    @BeforeEach
+    void setUp() {
+        Mockito.reset(androidManager);
+    }
+
     @Nested
     class UnitTests {
         @Nested
@@ -23,7 +32,6 @@ class AndroidDeviceManagerControllerTest {
             @SneakyThrows
             @Test
             void get_device_from_manager() {
-                AndroidManager androidManager = mock(AndroidManager.class);
                 doReturn(DeviceBuilder.builder().build()).when(androidManager).getDevice(eq("test-udid"));
                 AndroidDeviceManagerController target = new AndroidDeviceManagerController(androidManager);
 
@@ -35,7 +43,6 @@ class AndroidDeviceManagerControllerTest {
             @SneakyThrows
             @Test
             void return_device() {
-                AndroidManager androidManager = mock(AndroidManager.class);
                 doReturn(DeviceBuilder.builder()
                         .withApiLevel("TEST-api-level")
                         .withBrand("TEST-brand")
@@ -58,26 +65,25 @@ class AndroidDeviceManagerControllerTest {
                 Device actual = target.getAndroidDevice("test-udid");
 
                 assertEquals("TEST-api-level", actual.getApiLevel());
-                assertEquals("TEST-api-level",actual.getApiLevel());
-                assertEquals("TEST-brand",actual.getBrand());
+                assertEquals("TEST-api-level", actual.getApiLevel());
+                assertEquals("TEST-brand", actual.getBrand());
                 assertTrue(actual.isAvailable());
                 assertTrue(actual.isCloud());
                 assertTrue(actual.isDevice());
-                assertEquals("TEST-device-manufacturer",actual.getDeviceManufacturer());
-                assertEquals("TEST-device-model",actual.getDeviceModel());
-                assertEquals("TEST-device-type",actual.getDeviceType());
-                assertEquals("TEST-name",actual.getName());
-                assertEquals("TEST-os",actual.getOs());
-                assertEquals("TEST-os-version",actual.getOsVersion());
-                assertEquals("TEST-screen-size",actual.getScreenSize());
-                assertEquals("TEST-state",actual.getState());
-                assertEquals("TEST-udid",actual.getUdid());
+                assertEquals("TEST-device-manufacturer", actual.getDeviceManufacturer());
+                assertEquals("TEST-device-model", actual.getDeviceModel());
+                assertEquals("TEST-device-type", actual.getDeviceType());
+                assertEquals("TEST-name", actual.getName());
+                assertEquals("TEST-os", actual.getOs());
+                assertEquals("TEST-os-version", actual.getOsVersion());
+                assertEquals("TEST-screen-size", actual.getScreenSize());
+                assertEquals("TEST-state", actual.getState());
+                assertEquals("TEST-udid", actual.getUdid());
             }
 
             @SneakyThrows
             @Test
             void throw_exception_if_runtime_exception_occurred() {
-                AndroidManager androidManager = mock(AndroidManager.class);
                 doThrow(new RuntimeException()).when(androidManager).getDevice("test-udid");
                 AndroidDeviceManagerController target = new AndroidDeviceManagerController(androidManager);
 
@@ -110,7 +116,6 @@ class AndroidDeviceManagerControllerTest {
                         .withState("TEST-state")
                         .withUdid("TEST-udid")
                         .build();
-                AndroidManager androidManager = mock(AndroidManager.class);
                 doReturn(device).when(androidManager).getDevice(eq("test-udid"));
                 AndroidDeviceManagerController target = new AndroidDeviceManagerController(androidManager);
 
