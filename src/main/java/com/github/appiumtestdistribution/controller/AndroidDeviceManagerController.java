@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AndroidDeviceManagerController {
     private final AndroidManager manager;
 
-    public AndroidDeviceManagerController() {
-        this.manager = new AndroidManager();
+    public AndroidDeviceManagerController(AndroidManager manager) {
+        this.manager = manager;
     }
 
     @SneakyThrows
